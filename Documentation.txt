@@ -1,0 +1,94 @@
+We Have built the server using express and app instance on port 9003. we have set up all the neccessary requirments. 
+
+This project is regarding school payment. we have to create the online payment options for all the students from all the schools. On one portol.
+
+When any student is going to pay the money/fee then he/she will encounter this steps to be followed.
+
+BackEnd:- 
+1. when the student will be entered he/her details then we will be registering the student with one unique id which will be used in further phases. 
+2. When the student will register successfully then he will be redirected to the login page with minimal details which are email and passcode.
+3. When the user will login successfully token will be issued to user to keep him alive throght out the application. (This token is only used for the application purpose only).
+4. Dashboard is the next step for this. the dashboard is simple with minimal UI. Having only of payment and getting the recipts. having the success or failed of the payment by the user.
+     (There are lots of thing which are under going the work to intiate the payment and get the result creating the jwt token while payment is in the process for the sake of security.)
+5. There will be the internal work which is going to happen. Web Hooks will be generated from the backend side to tell or notify that this user payment is been success or failed.
+6. On that based of result we will have the order status schema(Stores the payment transaction information). Which hving the certian feilds which will be displyed for the user.
+
+
+Endpoints :-
+    1. User Register 
+     1.1 We have the user to register in the application throught feww details like First and Last Name and Email and Password. 
+     1.2 Then we will be validating the user and register user in the db.
+     1.3 API 
+         1.3.1.  curl -X POST http://localhost:9003/api/user/register/ \
+                 -H "Content-Type: application.json" 
+                 -d '{
+                    "FirstName": "",
+                    "LastName": "",
+                    "Email": "",
+                    "Password": ""
+                 }'
+     
+    2. User login
+     2.1 User will login with Email and Password.
+     2.2 Validating the details and User can use our application.
+     2.3 Result: Access, Refersh tokens are been provided.
+     2.4 API 
+          2.4.1. curl -X POST http://localhost:9003/api/user/login/ \
+                 -H "Content-Type: application.json" 
+                 -d '{
+                    "Email": "",
+                    "password": ""
+                 }'
+
+    3. Payment Create
+     3.1 Pay Button Clicked by the user. A Page pop up having some detials to be filled.
+     3.2 school_id, amount, callback_url. Will be validated . Sign the JWT with this three details and send to the payment gateway. with PG_Sercet_Key Combined.
+     3.3 Result: Sign provided.
+     3.4 API 
+        3.4.1. curl -X POST http://localhost:9003/api/user/payment/ \
+               -H "Content-Type: application.json" \
+               -H "Authorization: Bearer <AccessToken>" 
+               -d '{
+                    "school_id": "",
+                    "amount": "",
+                    "callback_url": "",
+               }'
+
+    4. Payment Link Creation
+     4.1 User clicks submit button. the payment from back will be doing this work no frontend work is been done here.
+     4.2 All the details like school_id, amount, callback_url, sign, user_url. Which is included directly into the api.
+     4.3 Result: Payment Url Generated.
+     4.4 API 
+         4.4.1. curl -X POST http://localhost:9003/api/user/finalPayment \
+                -H "Content-Type: application.json" \
+                -H "Authorization: Bearer <API_KEY>" \
+                -d '{
+                    "school_id": "",
+                    "amount": "",
+                    "callback_url": "",
+                    "sign": ""
+                }'
+
+    5. Payment Status Check
+     5.1 User will be directed to the razor pay or any gateway. The Jwt Token is been created by combination of school_id and collect_request_id. And combined with PG_Secret_Key.
+     5.2 Chooses the payment options by user. The details will be from query and path parameters like so there is no data from body.
+     5.3 DEMO (To Simulate the payment we have to enter any one of the element from array
+                         [
+                              A. Common Test UPI IDs in Sandbox
+                                A.1   testsuccess@gocash for simulating a successful transaction
+                                A.2   testfailure@gocash for simulating a failed transaction
+                                A.3   testtpvsuccess@gocash for Third Party Vendor success simulation
+                                A.4   testtpvfail@gocash for Third Party Vendor failure simulation
+                                A.5   success@upi or success@razorpay for success in some other environments
+                                A.6   failure@upi often used for failure simulation
+                         ] )
+     5.4 Result: Payment Successfully then direct to url. According to the test cases the result  works. 
+     5.5 API 
+          5.5.1  curl -X POST http://localhost:9003/api/user/PaymentStatusCheck/${callback_url}?school_id=${65b0e6293e9f76a9694d84b4}" \
+                    -H "Content-Type: application/json" \
+                    -H "Authorization: Bearer <API_KEY>" \
+                    -d '{}'
+
+
+
+FrontEnd:- 

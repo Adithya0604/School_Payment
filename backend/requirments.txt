@@ -1,0 +1,2 @@
+Installed Packages 
+npm install express mongoose cors dotenv nodemon jsonwebtoken bcryptjs axios crypto
