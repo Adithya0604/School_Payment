@@ -32,7 +32,6 @@ function Register() {
       }
     }
 
-    // Additional password validation
     if (formData.Password && formData.Password.length < 8) {
       newError.Password = "Password must be at least 8 characters long";
     }
@@ -65,111 +64,278 @@ function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
-        <div className="text-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Create Account
-          </h2>
-          <p className="text-gray-600">Join us today</p>
-        </div>
+    <>
+      <style>
+        {`
+          * {
+            margin: 0; padding: 0; box-sizing: border-box;
+          }
+          html, body, #root {
+            height: 100%;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #405D60 0%, #2F4858 100%);
+            color: #E1EDE6;
+            font-size: 14px;
+          }
+          .page-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            width: 100%;
+          }
+          .main-container {
+            background-color: #1F2A33;
+            width: 480px;
+            max-width: 95vw;
+            padding: 36px 44px;
+            border-radius: 16px;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255 255 255 / 0.06);
+          }
+          .header-title {
+            text-align: center;
+            margin-bottom: 24px;
+            color: #A7C7E7;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+          }
+          .header-subtitle {
+            text-align: center;
+            color: #B0C9D6;
+            font-size: 14px;
+            font-weight: 400;
+            margin-bottom: 28px;
+          }
+          .form-row {
+            display: flex;
+            gap: 18px;
+            margin-bottom: 18px;
+          }
+          .form-group {
+            flex: 1;
+          }
+          .form-group-full {
+            margin-bottom: 20px;
+          }
+          .label {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            display: block;
+            color: #9FB8C7;
+            letter-spacing: 0.4px;
+          }
+          input[type="text"],
+          input[type="email"],
+          input[type="password"] {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #4F6D7A;
+            border-radius: 12px;
+            font-size: 14px;
+            background-color: #355468;
+            color: #D5E1E8;
+            transition: all 0.3s ease;
+          }
+          input[type="text"]:focus,
+          input[type="email"]:focus,
+          input[type="password"]:focus {
+            border-color: #79A19B;
+            outline: none;
+            background-color: #4C6B72;
+            box-shadow: 0 0 6px #79A19B;
+            color: #E1EDE6;
+          }
+          input::placeholder {
+            color: #ACC6C9;
+            font-weight: 400;
+          }
+          .error-message {
+            color: #F25F5C;
+            font-size: 12px;
+            margin-top: 4px;
+            font-weight: 600;
+          }
+          .api-error {
+            background-color: #922b2b29;
+            color: #F25F5C;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 16px;
+            font-size: 13px;
+          }
+          .submit-button {
+            width: 100%;
+            padding: 14px;
+            font-size: 15px;
+            background: linear-gradient(135deg, #39603D 0%, #2E4F3F 100%);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-top: 8px;
+            box-shadow: 0 4px 15px rgba(57,96,61,0.5);
+          }
+          .submit-button:hover:enabled {
+            background: linear-gradient(135deg, #456E43 0%, #3A5F3F 100%);
+            box-shadow: 0 8px 25px rgba(69,110,67,0.7);
+            transform: translateY(-2px);
+          }
+          .submit-button:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+            box-shadow: none;
+            transform: none;
+          }
+          .footer-links {
+            margin-top: 32px;
+            text-align: center;
+            font-size: 13px;
+            color: #B0C9D6;
+          }
+          .footer-text {
+            margin-bottom: 12px;
+          }
+          .footer-links button {
+            background: none;
+            border: none;
+            color: #8DA5AD;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            font-size: 13px;
+            text-decoration: none;
+            margin-left: 4px;
+          }
+          .footer-links button:hover {
+            color: #AAC9CE;
+            background-color: rgba(255 255 255 / 0.1);
+            text-decoration: none;
+          }
+          @media (max-width: 540px) {
+            .form-row {
+              flex-direction: column;
+              gap: 14px;
+            }
+          }
+        `}
+      </style>
 
-        <form onSubmit={handleSubmit} noValidate className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              First Name
-            </label>
-            <input
-              type="text"
-              name="FirstName"
-              value={formData.FirstName}
-              onChange={handleData}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-              placeholder="Enter your first name"
-              required
-            />
-            <FormError errors={errors.FirstName} />
-          </div>
+      <div className="page-container">
+        <div className="main-container">
+          <h1 className="header-title">Create Account</h1>
+          <p className="header-subtitle">Join us today</p>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Last Name
-            </label>
-            <input
-              type="text"
-              name="LastName"
-              value={formData.LastName}
-              onChange={handleData}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-              placeholder="Enter your last name"
-              required
-            />
-            <FormError errors={errors.LastName} />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
-            <input
-              type="email"
-              name="Email"
-              value={formData.Email}
-              onChange={handleData}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-              placeholder="Enter your email"
-              required
-              autoComplete="email"
-            />
-            <FormError errors={errors.Email} />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
-            <input
-              type="password"
-              name="Password"
-              value={formData.Password}
-              onChange={handleData}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-              placeholder="Enter your password"
-              required
-              minLength={8}
-              autoComplete="current-password"
-            />
-            <FormError errors={errors.Password} />
-          </div>
-
-          {errors.api && (
-            <div className="bg-red-50 border border-red-200 rounded-md p-3">
-              <span className="text-red-600 text-sm">{errors.api}</span>
+          <form onSubmit={handleSubmit} noValidate>
+            {/* Name Row */}
+            <div className="form-row">
+              <div className="form-group">
+                <label className="label" htmlFor="FirstName">
+                  First Name
+                </label>
+                <input
+                  type="text"
+                  id="FirstName"
+                  name="FirstName"
+                  value={formData.FirstName}
+                  onChange={handleData}
+                  placeholder="First name"
+                  required
+                />
+                <FormError error={errors.FirstName} />
+              </div>
+              <div className="form-group">
+                <label className="label" htmlFor="LastName">
+                  Last Name
+                </label>
+                <input
+                  type="text"
+                  id="LastName"
+                  name="LastName"
+                  value={formData.LastName}
+                  onChange={handleData}
+                  placeholder="Last name"
+                  required
+                />
+                <FormError error={errors.LastName} />
+              </div>
             </div>
-          )}
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium py-2 px-4 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          >
-            {isLoading ? "Registering..." : "Register"}
-          </button>
-        </form>
+            {/* Email */}
+            <div className="form-group-full">
+              <label className="label" htmlFor="Email">
+                Email Address
+              </label>
+              <input
+                type="email"
+                id="Email"
+                name="Email"
+                value={formData.Email}
+                onChange={handleData}
+                placeholder="Enter your email"
+                required
+                autoComplete="email"
+              />
+              <FormError error={errors.Email} />
+            </div>
 
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
-            Already have an account?{" "}
+            {/* Password */}
+            <div className="form-group-full">
+              <label className="label" htmlFor="Password">
+                Password
+              </label>
+              <input
+                type="password"
+                id="Password"
+                name="Password"
+                value={formData.Password}
+                onChange={handleData}
+                placeholder="Enter your password (min 8 characters)"
+                required
+                minLength={8}
+                autoComplete="new-password"
+              />
+              <FormError error={errors.Password} />
+            </div>
+
+            {/* API error */}
+            {errors.api && <div className="api-error">{errors.api}</div>}
+
+            {/* Submit */}
             <button
-              onClick={() => navigate("/login")}
-              className="text-blue-600 hover:text-blue-700 font-medium"
+              type="submit"
+              disabled={isLoading}
+              className="submit-button"
             >
-              Sign in
+              {isLoading ? "Creating Account..." : "Create Account"}
             </button>
-          </p>
+          </form>
+
+          <div className="footer-links">
+            <p className="footer-text">
+              Already have an account?
+              <button
+                className="signup-link"
+                onClick={() => navigate("/login")}
+                type="button"
+              >
+                Sign in
+              </button>
+            </p>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

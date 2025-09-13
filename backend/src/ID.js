@@ -1,9 +1,9 @@
-const crypto = require("crypto");
+import crypto from "crypto";
 
 async function generateID() {
   const letters = "QWERTYUIOPLKJHGFDSAZXCVBNM";
 
-  const letterMerge = "";
+  let letterMerge = "";
 
   for (let i = 0; i < 4; i++) {
     const randomLetter = crypto.randomInt(0, letters.length);
@@ -12,7 +12,7 @@ async function generateID() {
 
   const numberMerge = String(crypto.randomInt(0, 1000000)).padStart(6, "0");
 
-  return letterMerge + numberMerge;
+  return `ORD + ${letterMerge} + ${numberMerge}`;
 }
 
 export default generateID;

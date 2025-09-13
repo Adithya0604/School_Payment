@@ -16,10 +16,8 @@ function Pay() {
   });
 
   const [error, setErrors] = useState({});
-
   const [isLoading, setIsLoading] = useState(false);
   const [collectRequestId, setCollectRequestId] = useState(null);
-
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -43,7 +41,6 @@ function Pay() {
       setIsLoading(false);
       return;
     }
-
 
     try {
       const response = await userPayment(formData);
@@ -76,124 +73,240 @@ function Pay() {
       setIsLoading(false);
     }
   };
+
   return (
     <>
-      <div>
-        <form onSubmit={handleSubmit} method="post">
-          <div>
-            <label htmlFor="school_id">School ID</label>
-            <input
-              type="text"
-              id="school_id"
-              name="school_id"
-              onChange={handleChange}
-              required
-            />
-            <FormError error={error.school_id} />
-          </div>
+      <style>
+        {`
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+          }
+          html, body, #root {
+            height: 100%;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2a9d8f 0%, #264653 100%);
+            color: #f0f4f8;
+            font-size: 14px;
+          }
+          .page-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            width: 100%;
+          }
+          .form-container {
+            background: #1d3557;
+            width: 450px;
+            padding: 30px 40px;
+            border-radius: 14px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+          }
+          form > div {
+            margin-bottom: 16px;
+          }
+          label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 6px;
+            color: #a8dadc;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+          }
+          input[type="text"],
+          input[type="email"] {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 2px solid #457b9d;
+            font-size: 14px;
+            background-color: #457b9d;
+            color: #f1faee;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+          }
+          input[type="text"]:focus,
+          input[type="email"]:focus {
+            outline: none;
+            border-color: #e63946;
+            background-color: #a8dadc;
+            color: #1d3557;
+            box-shadow: 0 0 6px #e63946;
+          }
+          input[readonly] {
+            background-color: #2a9d8f;
+            cursor: not-allowed;
+          }
+          .error-message {
+            color: #f94144;
+            font-size: 12px;
+            margin-top: 4px;
+            font-weight: 600;
+          }
+          .api-error {
+            background-color: #f94144;
+            color: #fff;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 16px;
+            font-size: 13px;
+          }
+          button {
+            width: 50%;
+            padding: 12px;
+            font-size: 15px;
+            background: #e76f51;
+            color: white;
+            font-weight: 700;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+          }
+          button:hover:enabled {
+            background-color: #f28482;
+            box-shadow: 0 6px 18px rgba(231, 111, 81, 0.7);
+          }
+          button:disabled {
+            background-color: #a8dadc;
+            cursor: not-allowed;
+            box-shadow: none;
+            color: #333;
+          }
+        `}
+      </style>
 
-          <div>
-            <label htmlFor="amount">Amount</label>
-            <input
-              type="text"
-              id="amount"
-              name="amount"
-              onChange={handleChange}
-              required
-            />
-            <FormError error={error.amount} />
-          </div>
+      <div className="page-wrapper">
+        <div className="form-container">
+          <form onSubmit={handleSubmit} method="post" noValidate>
+            <h2
+              style={{
+                marginBottom: "16px",
+                color: "White",
+                textAlign: "center",
+              }}
+            >
+              Transfer Payment
+            </h2>
+            <div>
+              <label htmlFor="school_id">School ID</label>
+              <input
+                type="text"
+                id="school_id"
+                name="school_id"
+                onChange={handleChange}
+                value={formData.school_id}
+                required
+              />
+              <FormError error={error.school_id} />
+            </div>
 
-          <div>
-            <label htmlFor="callback_url">CallBack Url</label>
-            <input
-              type="text"
-              id="callback_url"
-              name="callback_url"
-              value={formData.callback_url}
-              onChange={handleChange}
-              readOnly
-            />
-          </div>
+            <div>
+              <label htmlFor="amount">Amount</label>
+              <input
+                type="text"
+                id="amount"
+                name="amount"
+                onChange={handleChange}
+                value={formData.amount}
+                required
+              />
+              <FormError error={error.amount} />
+            </div>
 
-          <div>
-            <label htmlFor="name">Name</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              onChange={handleChange}
-              required
-            />
-            <FormError error={error.name} />
-          </div>
+            <div>
+              <label htmlFor="callback_url">CallBack Url</label>
+              <input
+                type="text"
+                id="callback_url"
+                name="callback_url"
+                value={formData.callback_url}
+                readOnly
+              />
+            </div>
 
-          <div>
-            <label htmlFor="id">Id</label>
-            <input
-              type="text"
-              id="id"
-              name="id"
-              onChange={handleChange}
-              required
-            />
-            <FormError error={error.id} />
-          </div>
+            <div>
+              <label htmlFor="name">Name</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                onChange={handleChange}
+                value={formData.name}
+                required
+              />
+              <FormError error={error.name} />
+            </div>
 
-          <div>
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              onChange={handleChange}
-              required
-            />
-            <FormError error={error.email} />
-          </div>
+            <div>
+              <label htmlFor="id">Id</label>
+              <input
+                type="text"
+                id="id"
+                name="id"
+                onChange={handleChange}
+                value={formData.id}
+                required
+              />
+              <FormError error={error.id} />
+            </div>
 
-          <div>
-            <label htmlFor="trustee_id">Trustee Id</label>
-            <input
-              type="text"
-              id="trustee_id"
-              name="trustee_id"
-              onChange={handleChange}
-              required
-            />
-            <FormError error={error.trustee_id} />
-          </div>
+            <div>
+              <label htmlFor="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                onChange={handleChange}
+                value={formData.email}
+                required
+              />
+              <FormError error={error.email} />
+            </div>
 
-          <div>
-            <label htmlFor="user_upi">User UPI</label>
-            <input
-              type="text"
-              id="user_upi"
-              name="user_upi"
-              onChange={handleChange}
-            />
-            <FormError error={error.user_upi} />
-          </div>
+            <div>
+              <label htmlFor="trustee_id">Trustee Id</label>
+              <input
+                type="text"
+                id="trustee_id"
+                name="trustee_id"
+                onChange={handleChange}
+                value={formData.trustee_id}
+                required
+              />
+              <FormError error={error.trustee_id} />
+            </div>
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className={`w-full py-3 rounded-lg text-white font-semibold transition ${
-              isLoading
-                ? "bg-indigo-300 cursor-not-allowed"
-                : "bg-indigo-600 hover:bg-indigo-700"
-            } focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
-          >
-            {isLoading ? "Submiting ..." : "Submited"}
-          </button>
+            <div>
+              <label htmlFor="user_upi">User UPI</label>
+              <input
+                type="text"
+                id="user_upi"
+                name="user_upi"
+                onChange={handleChange}
+                value={formData.user_upi}
+              />
+              <FormError error={error.user_upi} />
+            </div>
 
-          {collectRequestId && (
-            <PaymentStatus
-              collect_request_id={collectRequestId}
-              school_id={formData.school_id}
-            />
-          )}
-        </form>
+            {error.api && <div className="api-error">{error.api}</div>}
+
+            <button type="submit" disabled={isLoading}>
+              {isLoading ? "Submitting ..." : "Submit"}
+            </button>
+
+            {collectRequestId && (
+              <PaymentStatus
+                collect_request_id={collectRequestId}
+                school_id={formData.school_id}
+              />
+            )}
+          </form>
+        </div>
       </div>
     </>
   );

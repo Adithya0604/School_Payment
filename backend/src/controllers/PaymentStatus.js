@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import axios from "axios";
 import Order from "../model/Order.js";
 import OrderStatus from "../model/OrderStatus.js";
+import generateID from "../ID.js";
 
 dotenv.config();
 
@@ -53,6 +54,7 @@ async function PaymentStatusCheck(request, response) {
 
       await OrderStatus.create({
         collect_id: order._id,
+        custom_order_id: await generateID(),
         order_amount: paymentStatus?.amount || null,
         transaction_amount: paymentStatus?.transaction_amount || null,
         payment_mode: paymentStatus?.details?.payment_mode || null,

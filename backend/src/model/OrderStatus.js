@@ -8,29 +8,34 @@ const OrderStatusSchema = new mongoose.Schema(
       ref: "Order",
       index: true,
     },
+    custom_order_id: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     order_amount: {
       type: Number,
-      required: false, // Not always available for failed transactions
+      required: false,
     },
     transaction_amount: {
       type: Number,
-      required: false, // Same reason as above
+      required: false,
     },
     payment_mode: {
       type: String,
-      required: false, // Some gateways don't send mode if failed
+      required: false,
     },
     payment_details: {
-      type: mongoose.Schema.Types.Mixed, // ✅ can store JSON object or string safely
+      type: mongoose.Schema.Types.Mixed,
       required: false,
     },
     bank_reference: {
       type: String,
-      required: false, // Some cases may not have reference
+      required: false,
     },
     payment_message: {
       type: String,
-      required: false, // Can be empty or missing for pending
+      required: false,
     },
     status: {
       type: String,
