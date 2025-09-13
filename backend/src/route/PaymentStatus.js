@@ -11,4 +11,10 @@ PaymentStatusRouter.get(
   PaymentStatusCheck
 );
 
+PaymentStatusRouter.get(
+  "/updateOrderStatusFromPaymentStatus/:collect_request_id",
+  PaymentStatusMiddleWare,
+  PaymentStatusCheck
+);
+
 export default PaymentStatusRouter;

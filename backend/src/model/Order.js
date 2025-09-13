@@ -1,13 +1,9 @@
-const express = require("express");
-const { default: mongoose } = require("mongoose");
-const { type } = require("os");
-const { ref } = require("process");
+import mongoose from "mongoose";
 
 const OrderSchema = new mongoose.Schema(
   {
     school_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
       required: true,
       index: true,
     },
@@ -17,12 +13,19 @@ const OrderSchema = new mongoose.Schema(
       index: true,
     },
     student_info: {
-      name: string,
-      id: string,
-      email: string,
+      name: String,
+      id: String,
+      email: String,
     },
     gateway_name: {
       type: String,
+      default: "Edviron",
+    },
+    collect_request_id: {
+      type: String,
+      index: true,
+      unique: true,
+      sparse: true,
     },
   },
   { timestamps: true }
@@ -30,4 +33,4 @@ const OrderSchema = new mongoose.Schema(
 
 const Order = mongoose.model("Order", OrderSchema, "orders");
 
-module.exports = { Order };
+export default Order;

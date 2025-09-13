@@ -1,5 +1,4 @@
-const express = require("express");
-const { default: mongoose } = require("mongoose");
+import mongoose from "mongoose";
 
 const OrderStatusSchema = new mongoose.Schema(
   {
@@ -11,26 +10,27 @@ const OrderStatusSchema = new mongoose.Schema(
     },
     order_amount: {
       type: Number,
-      required: true,
+      required: false, // Not always available for failed transactions
     },
     transaction_amount: {
       type: Number,
-      required: true,
+      required: false, // Same reason as above
     },
     payment_mode: {
       type: String,
-      required: true,
+      required: false, // Some gateways don't send mode if failed
     },
     payment_details: {
-      type: String,
+      type: mongoose.Schema.Types.Mixed, // ✅ can store JSON object or string safely
+      required: false,
     },
     bank_reference: {
       type: String,
-      required: true,
+      required: false, // Some cases may not have reference
     },
     payment_message: {
       type: String,
-      required: true,
+      required: false, // Can be empty or missing for pending
     },
     status: {
       type: String,
@@ -39,6 +39,7 @@ const OrderStatusSchema = new mongoose.Schema(
     },
     error_message: {
       type: String,
+      required: false,
     },
     payment_time: {
       type: Date,
@@ -54,4 +55,4 @@ const OrderStatus = mongoose.model(
   "orderstatus"
 );
 
-module.exports = { OrderStatus };
+export default OrderStatus;

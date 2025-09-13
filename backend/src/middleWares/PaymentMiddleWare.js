@@ -1,7 +1,7 @@
 import ErrorCodes from "./ErrorCodes.js";
 import JWT from "jsonwebtoken";
 
-// ✅ Middleware to validate payment inputs
+
 async function CreatePaymentMiddleWare(request, response, next) {
   const { school_id, amount, callback_url, user_upi } = request.body;
 
@@ -22,7 +22,6 @@ async function CreatePaymentMiddleWare(request, response, next) {
         .json({ success: false, Message: "Invalid amount" });
     }
 
-    // Validate callback URL
     try {
       new URL(callback_url);
     } catch (error) {
@@ -43,7 +42,6 @@ async function CreatePaymentMiddleWare(request, response, next) {
   }
 }
 
-// ✅ Middleware to check JWT auth
 async function UserAuth(request, response, next) {
   let AccessHeader = request.headers["authorization"];
 
