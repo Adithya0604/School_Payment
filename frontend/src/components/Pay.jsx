@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import FormError from "../components/FormError";
 import { userPayment } from "../features/auth/authapi";
 import PaymentStatus from "./PaymentStatus";
+import Model from "./Model";
 
 function Pay() {
   const [formData, setFormData] = useState({
@@ -15,6 +16,7 @@ function Pay() {
     callback_url: "https://www.google.com",
   });
 
+  const [model, setModel] = useState("");
   const [error, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [collectRequestId, setCollectRequestId] = useState(null);
@@ -46,7 +48,7 @@ function Pay() {
       const response = await userPayment(formData);
 
       if (response.success === true) {
-        alert("Directing Payment...");
+        setModel("Directing Payment...");
 
         const paymentUrl = response.PaymentLink?.payment_url;
         const collect_request_id = response.PaymentLink?.collect_request_id;
@@ -308,6 +310,7 @@ function Pay() {
           </form>
         </div>
       </div>
+      {<Model message={model} />}
     </>
   );
 }

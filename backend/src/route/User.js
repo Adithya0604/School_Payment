@@ -8,6 +8,8 @@ import {
   refreshTokenHandler,
 } from "../controllers/User.js";
 
+import { UserAuth } from "../middleWares/PaymentMiddleWare.js";
+
 import {
   userRegisterMiddleWare,
   userLoginMiddleWare,
@@ -21,9 +23,9 @@ UserRouter.route("/register").post(userRegisterMiddleWare, userRegister);
 UserRouter.route("/login").post(userLoginMiddleWare, userLogin);
 
 // # User RefreshToken
-UserRouter.route("/refreshToken").post(refreshTokenHandler);
+UserRouter.route("/refreshToken").post(UserAuth, refreshTokenHandler);
 
 // # User LogOut
-UserRouter.route("/logout").post(userLogout);
+UserRouter.route("/logout").post(UserAuth, userLogout);
 
 export default UserRouter;

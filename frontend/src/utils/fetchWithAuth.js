@@ -1,5 +1,3 @@
-// utlis/fetchWithAuth.js
-
 let accessToken = null;
 
 export function setAccessToken(token) {
@@ -59,7 +57,6 @@ export async function fetchWithAuth(url, options = {}) {
   }
 }
 
-// Initialize token from localStorage if available
 const tokenFromStorage = localStorage.getItem("accessToken");
 if (tokenFromStorage) {
   setAccessToken(tokenFromStorage);

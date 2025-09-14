@@ -1,115 +1,92 @@
 import mongoose from "mongoose";
 
-// Get all transactions 
+// Get all transactions (from webhook logs)
 export async function Transaction(_, res) {
   try {
     const transactions = await mongoose.connection.db
-      .collection("orders")
+      .collection("webhooklogs")
       .aggregate([
         {
-          $lookup: {
-            from: "orderstatuses", 
-            localField: "_id", 
-            foreignField: "collect_id", 
-            as: "status_info",
-          },
-        },
-        {
-          $unwind: { path: "$status_info", preserveNullAndEmptyArrays: true }, 
-        },
-        {
           $project: {
-            order_id: "$_id",
-            collect_id: "$status_info.collect_id",
-            school_id: 1,
-            trustee_id: 1,
-            gateway_name: 1, 
-            collect_request_id: 1, 
-            order_amount: "$status_info.order_amount",
-            transaction_amount: "$status_info.transaction_amount",
-            payment_mode: "$status_info.payment_mode",
-            status: "$status_info.status",
-            payment_time: "$status_info.payment_time",
-            createdAt: 1,
+            _id: 0,
+            order_id: "$order_info.order_id",
+            collect_request_id: "$order_info.collect_request_id",
+            order_amount: "$order_info.order_amount",
+            transaction_amount: "$order_info.transaction_amount",
+            payment_mode: "$order_info.payment_mode",
+            status: "$order_info.status",
+            gateway: "$order_info.gateway",
+            bank_reference: "$order_info.bank_reference",
+            payment_time: "$order_info.payment_time",
+            payment_message: "$order_info.payment_message",
           },
         },
+        { $sort: { payment_time: -1 } },
       ])
       .toArray();
 
     res.json(transactions);
   } catch (e) {
+    console.error("Transaction fetch error:", e);
     res.status(500).json({ error: e.message });
   }
 }
 
-// Get all transactions for a specific school
+// Get all transactions for a specific school (if school_id exists in order_info)
 export async function TransactionSchool(req, res) {
   const { schoolId } = req.params;
   try {
     const transactions = await mongoose.connection.db
-      .collection("orders")
+      .collection("webhooklogs")
       .aggregate([
-        { 
-          $match: { 
-            school_id: new mongoose.Types.ObjectId(schoolId) 
-          } 
-        },
         {
-          $lookup: {
-            from: "orderstatuses", 
-            localField: "_id", 
-            foreignField: "collect_id",
-            as: "status_info",
+          $match: {
+            "order_info.school_id": new mongoose.Types.ObjectId(schoolId),
           },
-        },
-        {
-          $unwind: { path: "$status_info", preserveNullAndEmptyArrays: true },
         },
         {
           $project: {
-            order_id: "$_id",
-            collect_id: "$status_info.collect_id",
-            school_id: 1,
-            trustee_id: 1,
-            gateway_name: 1,
-            collect_request_id: 1,
-            order_amount: "$status_info.order_amount",
-            transaction_amount: "$status_info.transaction_amount",
-            payment_mode: "$status_info.payment_mode",
-            status: "$status_info.status",
-            payment_time: "$status_info.payment_time",
-            createdAt: 1,
+            _id: 0,
+            order_id: "$order_info.order_id",
+            collect_request_id: "$order_info.collect_request_id",
+            order_amount: "$order_info.order_amount",
+            transaction_amount: "$order_info.transaction_amount",
+            payment_mode: "$order_info.payment_mode",
+            status: "$order_info.status",
+            gateway: "$order_info.gateway",
+            bank_reference: "$order_info.bank_reference",
+            payment_time: "$order_info.payment_time",
+            payment_message: "$order_info.payment_message",
           },
         },
+        { $sort: { payment_time: -1 } },
       ])
       .toArray();
 
     res.json(transactions);
   } catch (e) {
+    console.error("Transaction fetch error:", e);
     res.status(500).json({ error: e.message });
   }
 }
 
 // Get status for a specific order using collect_request_id
 export async function TransactionStatus(req, res) {
-  const { collect_request_id } = req.params; 
+  const { collect_request_id } = req.params;
   try {
-    // First find the order
-    const order = await mongoose.connection.db
-      .collection("orders")
-      .findOne({ collect_request_id });
+    const transaction = await mongoose.connection.db
+      .collection("webhooklogs")
+      .findOne(
+        { "order_info.collect_request_id": collect_request_id },
+        { projection: { _id: 0, order_info: 1, status: 1 } }
+      );
 
-    if (!order) return res.status(404).json({ error: "Order not found" });
+    if (!transaction)
+      return res.status(404).json({ error: "Transaction not found" });
 
-    // Then find the status using the order's _id
-    const status = await mongoose.connection.db
-      .collection("orderstatuses") 
-      .findOne({ collect_id: order._id });
-
-    if (!status) return res.status(404).json({ error: "Status not found" });
-    
-    res.json(status);
+    res.json(transaction);
   } catch (e) {
+    console.error("Transaction fetch error:", e);
     res.status(500).json({ error: e.message });
   }
 }

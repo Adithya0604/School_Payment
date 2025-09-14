@@ -12,7 +12,7 @@ async function generateID() {
 
   const numberMerge = String(crypto.randomInt(0, 1000000)).padStart(6, "0");
 
-  return `ORD + ${letterMerge} + ${numberMerge}`;
+  return `ORD$-{letterMerge}${numberMerge}`;
 }
 
 export default generateID;

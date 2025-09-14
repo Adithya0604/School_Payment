@@ -1,7 +1,7 @@
 import JWT from "jsonwebtoken";
 import axios from "axios";
 import dotenv from "dotenv";
-import  Order  from "../model/Order.js";
+import Order from "../model/Order.js";
 dotenv.config();
 
 // Unified API: Create Order + Payment Link
@@ -33,7 +33,6 @@ async function CreatePaymentAndLink(req, res) {
       });
     }
 
-    
     const student_info = { name, id, email };
     const order = new Order({
       school_id,
@@ -42,7 +41,6 @@ async function CreatePaymentAndLink(req, res) {
       gateway_name: "Edviron",
     });
     await order.save();
-
 
     const payload = { school_id, amount, callback_url };
     if (user_upi) payload.user_upi = user_upi;
@@ -59,15 +57,15 @@ async function CreatePaymentAndLink(req, res) {
       }
     );
 
+    console.log("Payment Status", data);
+
     const collect_request_id = data.collect_request_id;
     const paymentUrl =
       data.collect_request_url || data.Collect_request_url || null;
 
-
     order.collect_request_id = collect_request_id;
     await order.save();
 
-    
     return res.status(200).json({
       success: true,
       order_id: order._id,

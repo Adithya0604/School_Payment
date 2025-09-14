@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FormError from "../../components/FormError";
 import { userRegister } from "./authapi.js";
+import Model from "../../components/Model.jsx";
 
 function Register() {
   const navigate = useNavigate();
+  const [model, setModel] = useState("");
   const [formData, setFormData] = useState({
     FirstName: "",
     LastName: "",
@@ -45,9 +47,12 @@ function Register() {
     try {
       const response = await userRegister(formData);
 
-      if (response.status === 200) {
-        alert("Successfully Registered");
-        navigate("/login");
+      if (response.status === 201) {
+        setModel("Successfully Registered");
+        setTimeout(() => {
+          setModel("");
+          navigate("/login");
+        }, 1500);
       } else {
         setErrors({
           api:
@@ -335,6 +340,7 @@ function Register() {
           </div>
         </div>
       </div>
+      {<Model message={model} />}
     </>
   );
 }

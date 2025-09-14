@@ -15,10 +15,11 @@ function PaymentStatus({ collect_request_id, school_id }) {
           `http://localhost:9003/api/user/PaymentStatusCheck/${collect_request_id}?school_id=${school_id}`,
           { withCredentials: true }
         );
+
         const currentStatus = response.data.PaymentLink?.status || "Pending";
         setStatus(currentStatus);
 
-        if (currentStatus === "SUCCESS" || currentStatus === "FAILED") {
+        if (currentStatus === "SUCCESS" || currentStatus === "NOT INITIATED") {
           clearInterval(pollingInterval);
 
           await axios.get(
@@ -28,9 +29,8 @@ function PaymentStatus({ collect_request_id, school_id }) {
 
           setTimeout(() => {
             navigate("/dashboard");
-          }, 3000);
+          }, 1500);
         }
-        // else keep polling until status is final
       } catch (error) {
         clearInterval(pollingInterval);
         setStatus("FAILED");

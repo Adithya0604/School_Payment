@@ -3,9 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { userLogin } from "./authapi";
 import { setAccessToken } from "../../utils/fetchWithAuth";
 import FormError from "../../components/FormError";
+import Model from "../../components/Model";
 
 function Login() {
   const navigate = useNavigate();
+  const [model, setModel] = useState("");
+
   const [formData, setFormData] = useState({
     Email: "",
     Password: "",
@@ -35,8 +38,12 @@ function Login() {
       const response = await userLogin(formData);
       if (response.status === 200 && response.accessToken) {
         setAccessToken(response.accessToken);
-        alert("Login Successful!");
-        navigate("/dashboard");
+        setModel("Login Successful!");
+
+        setTimeout(() => {
+          setModel("");
+          navigate("/dashboard");
+        }, 1500);
       } else {
         setErrors({
           api:
@@ -273,6 +280,7 @@ function Login() {
           </div>
         </div>
       </div>
+      {<Model message={model} />}
     </>
   );
 }
