@@ -1,4 +1,4 @@
-import { userConnect } from "../model/User.js";
+import userConnect from "../model/User.js";
 import ErrorCodes from "./ErrorCodes.js";
 
 async function userRegisterMiddleWare(request, response, next) {

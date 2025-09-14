@@ -9,4 +9,4 @@ const ErrorCodes = {
   Server_Error: 500,
 };
 
-module.exports = ErrorCodes;
+export default ErrorCodes;

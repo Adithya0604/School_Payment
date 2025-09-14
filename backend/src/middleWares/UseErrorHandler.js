@@ -1,4 +1,4 @@
-const ErrorCodes = require("./ErrorCodes");
+import ErrorCodes from "./ErrorCodes.js";
 
 async function errorHandle(err, request, response, next) {
   const status = err.statusCode;
@@ -47,4 +47,4 @@ async function errorHandle(err, request, response, next) {
   }
 }
 
-module.exports = errorHandle;
+export default errorHandle;

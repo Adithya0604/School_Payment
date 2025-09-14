@@ -1,13 +1,12 @@
 import mongoose from "mongoose";
 
-// OrderInfoSchema
 const OrderInfoSchema = new mongoose.Schema(
   {
-    collect_request_id: {  // ✅ Match field name from webhook payload
+    collect_request_id: {
       type: String,
       required: true,
     },
-    order_id: {            // ✅ Keep a reference to our own order_id too
+    order_id: {
       type: String,
       required: true,
     },
@@ -25,7 +24,6 @@ const OrderInfoSchema = new mongoose.Schema(
   { _id: false }
 );
 
-// WebhookLogSchema
 const WebhookLogSchema = new mongoose.Schema(
   {
     status: { type: Number, required: true },

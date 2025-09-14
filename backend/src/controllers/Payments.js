@@ -33,7 +33,7 @@ async function CreatePaymentAndLink(req, res) {
       });
     }
 
-    // 2️⃣ Save order info locally
+    
     const student_info = { name, id, email };
     const order = new Order({
       school_id,

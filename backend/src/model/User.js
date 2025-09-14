@@ -1,5 +1,5 @@
-const express = require("express");
-const { default: mongoose } = require("mongoose");
+import express from "express";
+import mongoose from "mongoose";
 
 const userCreationSchema = new mongoose.Schema(
   {
@@ -7,7 +7,7 @@ const userCreationSchema = new mongoose.Schema(
       type: String,
       required: true,
       maxlength: 50,
-      trim: true, // ✅ Removes extra spaces
+      trim: true, 
     },
     LastName: {
       type: String,
@@ -18,25 +18,23 @@ const userCreationSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
-      lowercase: true, // ✅ Emails are case-insensitive
+      lowercase: true, 
       trim: true,
       match: [
         /^\S+@\S+\.\S+$/,
-        "Please enter a valid email address", // ✅ Basic validation
+        "Please enter a valid email address", 
       ],
     },
     Password: {
       type: String,
       required: true,
-      select: false, // ✅ Hide password by default in queries
+      select: false, 
     },
   },
   { timestamps: true }
 );
 
-// ✅ Index for faster lookup by email
-userCreationSchema.index({ Email: 1 }, { unique: true });
 
 const userConnect = mongoose.model("userConnect", userCreationSchema, "users");
 
-module.exports = { userConnect };
+export default userConnect;

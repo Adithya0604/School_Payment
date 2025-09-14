@@ -4,13 +4,14 @@ import PaymentStatusMiddleWare from "../middleWares/UsePaymentStatus.js";
 
 const PaymentStatusRouter = express.Router();
 
-// Define route with :collect_request_id as path parameter
+//Payment Status
 PaymentStatusRouter.get(
   "/PaymentStatusCheck/:collect_request_id",
   PaymentStatusMiddleWare,
   PaymentStatusCheck
 );
 
+//Update Model With Payment Status
 PaymentStatusRouter.get(
   "/updateOrderStatusFromPaymentStatus/:collect_request_id",
   PaymentStatusMiddleWare,

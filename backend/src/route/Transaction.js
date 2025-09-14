@@ -3,6 +3,7 @@ import { Transaction, TransactionSchool, TransactionStatus } from "../controller
 
 const router = express.Router();
 
+// Transaction
 router.get("/", Transaction);
 router.get("/school/:schoolId", TransactionSchool);
 router.get("/status/:custom_order_id", TransactionStatus);

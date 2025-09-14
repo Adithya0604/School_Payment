@@ -6,7 +6,7 @@ async function CreatePaymentMiddleWare(request, response, next) {
   const { school_id, amount, callback_url, user_upi } = request.body;
 
   try {
-    // Validate school_id format (example: ABC1234567)
+
     const schoolID = /^[a-fA-F0-9]{24}$/;
     if (!schoolID.test(school_id) || typeof school_id !== "string") {
       return response
@@ -14,7 +14,7 @@ async function CreatePaymentMiddleWare(request, response, next) {
         .json({ success: false, Message: "Invalid SchoolID" });
     }
 
-    // Validate amount
+
     const amountNumber = parseFloat(amount);
     if (amountNumber < 0 || isNaN(amountNumber)) {
       return response

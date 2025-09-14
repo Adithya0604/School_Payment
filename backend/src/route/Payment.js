@@ -7,6 +7,7 @@ import CreatePaymentAndLink from "../controllers/Payments.js";
 
 const PaymentRouter = express.Router();
 
+//Payment
 PaymentRouter.post(
   "/payment",
   UserAuth,

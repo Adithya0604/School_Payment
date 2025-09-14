@@ -1,7 +1,7 @@
 import JWT from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import ErrorCodes from "../middleWares/ErrorCodes.js";
-import { userConnect } from "../model/User.js";
+import userConnect from "../model/User.js";
 
 const refreshTokens = new Set();
 
