@@ -1,122 +1,812 @@
-We Have built the server using express and app instance on port 9003. we have set up all the neccessary requirments. 
+# School Payment System - Complete API Documentation
 
-This project is regarding school payment. we have to create the online payment options for all the students from all the schools. On one portol.
+## Project Overview
 
-When any student is going to pay the money/fee then he/she will encounter this steps to be followed.
+The School Payment System is a unified platform that enables students from multiple schools to make online payments through a single portal. Built with Express.js backend running on port 9003, the system integrates with the Edviron payment gateway to provide secure, reliable payment processing.
 
-BackEnd:- 
-1. when the student will be entered he/her details then we will be registering the student with one unique id which will be used in further phases. 
-2. When the student will register successfully then he will be redirected to the login page with minimal details which are email and passcode.
-3. When the user will login successfully token will be issued to user to keep him alive throght out the application. (This token is only used for the application purpose only).
-4. Dashboard is the next step for this. the dashboard is simple with minimal UI. Having only of payment and getting the recipts. having the success or failed of the payment by the user.
-     (There are lots of thing which are under going the work to intiate the payment and get the result creating the jwt token while payment is in the process for the sake of security.)
-5. There will be the internal work which is going to happen. Web Hooks will be generated from the backend side to tell or notify that this user payment is been success or failed.
-6. On that based of result we will have the order status schema(Stores the payment transaction information). Which hving the certian feilds which will be displyed for the user.
+### Technology Stack
+- **Backend**: Express.js (Node.js)
+- **Frontend**: React with Vite
+- **Payment Gateway**: Edviron
+- **Authentication**: JWT (JSON Web Tokens)
+- **Database**: MongoDB
 
+### Project Structure
+```
+payments/
+├── backend/
+│   ├── src/
+│   │   ├── controllers/
+│   │   ├── routes/
+│   │   ├── middlewares/
+│   │   └── models/
+├── frontend/
+│   └── src/
+└── package.json (root level with concurrently)
+```
 
-Endpoints :-
-    1. User Register 
-     1.1 We have the user to register in the application throught feww details like First and Last Name and Email and Password. 
-     1.2 Then we will be validating the user and register user in the db.
-     1.3 API 
-         1.3.1.  curl -X POST http://localhost:9003/api/user/register/ \
-                 -H "Content-Type: application.json" 
-                 -d '{
-                    "FirstName": "",
-                    "LastName": "",
-                    "Email": "",
-                    "Password": ""
-                 }'
-     
-    2. User login
-     2.1 User will login with Email and Password.
-     2.2 Validating the details and User can use our application.
-     2.3 Result: Access, Refersh tokens are been provided.
-     2.4 API 
-          2.4.1. curl -X POST http://localhost:9003/api/user/login/ \
-                 -H "Content-Type: application.json" 
-                 -d '{
-                    "Email": "",
-                    "password": ""
-                 }'
+---
 
-    3. Payment Create
-     3.1 Pay Button Clicked by the user. A Page pop up having some detials to be filled.
-     3.2 school_id, amount, callback_url. Will be validated . Sign the JWT with this three details and send to the payment gateway. with PG_Sercet_Key Combined.
-     3.3 Result: Sign provided.
-     3.4 API 
-        3.4.1. curl -X POST http://localhost:9003/api/user/payment/ \
-               -H "Content-Type: application.json" \
-               -H "Authorization: Bearer <AccessToken>" 
-               -d '{
-                    "school_id": "",
-                    "amount": "",
-                    "callback_url": "",
-               }'
+## Authentication & Security
 
-    4. Payment Link Creation
-     4.1 User clicks submit button. the payment from back will be doing this work no frontend work is been done here.
-     4.2 All the details like school_id, amount, callback_url, sign, user_url. Which is included directly into the api.
-     4.3 Result: Payment Url Generated.
-     4.4 API 
-         4.4.1. curl -X POST http://localhost:9003/api/user/finalPayment \
-                -H "Content-Type: application.json" \
-                -H "Authorization: Bearer <API_KEY>" \
-                -d '{
-                    "school_id": "",
-                    "amount": "",
-                    "callback_url": "",
-                    "sign": ""
-                }'
+The system uses a two-tier authentication approach:
 
-    5. Payment Status Check
-     5.1 User will be directed to the razor pay or any gateway. The Jwt Token is been created by combination of school_id and collect_request_id. And combined with PG_Secret_Key.
-     5.2 Chooses the payment options by user. The details will be from query and path parameters like so there is no data from body.
-     5.3 DEMO (To Simulate the payment we have to enter any one of the element from array
-                         [
-                              A. Common Test UPI IDs in Sandbox
-                                A.1   testsuccess@gocash for simulating a successful transaction
-                                A.2   testfailure@gocash for simulating a failed transaction
-                                A.3   testtpvsuccess@gocash for Third Party Vendor success simulation
-                                A.4   testtpvfail@gocash for Third Party Vendor failure simulation
-                                A.5   success@upi or success@razorpay for success in some other environments
-                                A.6   failure@upi often used for failure simulation
-                         ] )
-     5.4 Result: Payment Successfully then direct to url. According to the test cases the result  works. 
-     5.5 API 
-          5.5.1  curl -X POST http://localhost:9003/api/user/PaymentStatusCheck/${callback_url}?school_id=${65b0e6293e9f76a9694d84b4}" \
-                    -H "Content-Type: application/json" \
-                    -H "Authorization: Bearer <API_KEY>" \
-                    -d '{}'
+1. **User Authentication**: JWT tokens for student access
+2. **API Authentication**: API keys for payment gateway integration
 
+### JWT Token Structure
+- **Access Token**: Short-lived (15 minutes) for user session management
+- **Refresh Token**: Long-lived (7 days) for token renewal
+- **Payment JWT**: Signed with PG_SECRET_KEY for gateway communication
 
+---
 
-FrontEnd:- 
+## Backend API Endpoints
 
+### 1. User Registration
 
+**Purpose**: Register new students in the system with a unique identifier
 
-/*
+**Endpoint**: `POST /api/user/register/`
+
+**Headers**:
+```
+Content-Type: application/json
+```
+
+**Request Body**:
+```json
 {
-  "name": "payments",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
-    "start:backend": "cd backend && npm start",
-    "start:frontend": "cd frontend && npm run dev"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
-  "devDependencies": {
-    "concurrently": "^9.2.1"
-  },
-  "dependencies": {
-    "framer-motion": "^12.23.12",
-    "lucide-react": "^0.544.0",
-    "react-select": "^5.10.2"
+  "FirstName": "string",
+  "LastName": "string", 
+  "Email": "string",
+  "Password": "string"
+}
+```
+
+**Example Request**:
+```json
+{
+  "FirstName": "John",
+  "LastName": "Doe",
+  "Email": "student@example.com",
+  "Password": "SecurePass@123"
+}
+```
+
+**Success Response** (200):
+```json
+{
+  "success": true,
+  "Created_User": {
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "student@example.com",
+    "createdAt": "2025-09-12T15:15:28.166Z"
   }
 }
+```
 
-*/
+**Error Response** (400):
+```json
+{
+  "success": false,
+  "message": "Validation error message"
+}
+```
+
+**Process Flow**:
+1. Validate user input data
+2. Check for existing email
+3. Hash password securely
+4. Create user record with unique ID
+5. Return user details (excluding password)
+
+---
+
+### 2. User Login
+
+**Purpose**: Authenticate users and provide access/refresh tokens
+
+**Endpoint**: `POST /api/user/login/`
+
+**Headers**:
+```
+Content-Type: application/json
+```
+
+**Request Body**:
+```json
+{
+  "Email": "string",
+  "Password": "string"
+}
+```
+
+**Example Request**:
+```json
+{
+  "Email": "student@example.com",
+  "Password": "SecurePass@123"
+}
+```
+
+**Success Response** (200):
+```json
+{
+  "success": true,
+  "message": "Login successful.",
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhYmMxMjMiLCJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20ifQ.xyz789",
+  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhYmMxMjMifQ.def456",
+  "user": {
+    "firstName": "John",
+    "lastName": "Doe", 
+    "email": "student@example.com",
+    "createdAt": "2025-09-12T15:15:28.166Z"
+  }
+}
+```
+
+**Error Response** (401):
+```json
+{
+  "success": false,
+  "message": "Invalid credentials"
+}
+```
+
+**Token Details**:
+- **Access Token**: Expires in 15 minutes, used for API authentication
+- **Refresh Token**: Expires in 7 days, used for token renewal
+
+---
+
+### 3. Payment Creation
+
+**Purpose**: Initiate payment process and generate payment gateway link
+
+**Endpoint**: `POST /api/user/payment/`
+
+**Headers**:
+```
+Content-Type: application/json
+Authorization: Bearer <AccessToken>
+```
+
+**Request Body**:
+```json
+{
+  "school_id": "string",
+  "amount": "number",
+  "callback_url": "string",
+  "user_upi": "string (optional)",
+  "name": "string",
+  "email": "string", 
+  "id": "string",
+  "trustee_id": "string"
+}
+```
+
+**Example Request**:
+```json
+{
+  "school_id": "school_abc123",
+  "amount": 65000,
+  "callback_url": "https://yourschool.com/payment-success",
+  "user_upi": "9876543210@paytm",
+  "name": "John Doe",
+  "email": "student@example.com", 
+  "id": "STD001",
+  "trustee_id": "trustee_xyz789"
+}
+```
+
+**Success Response** (200):
+```json
+{
+  "success": true,
+  "order_id": "order_abc123def456",
+  "PaymentLink": {
+    "collect_request_id": "collect_xyz789abc123",
+    "payment_url": "https://dev-payments.edviron.com/edviron-pg/redirect?session_id=session_example123&collect_request_id=collect_xyz789abc123&amount=65000.00",
+    "sign": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY2hvb2xfaWQiOiJhYmMxMjMiLCJhbW91bnQiOjY1MDAwfQ.signature_example"
+  }
+}
+```
+
+**Process Flow**:
+1. Validate JWT token and user permissions
+2. Validate required payment fields
+3. Create local order record
+4. Generate JWT sign with school_id, amount, callback_url
+5. Make API call to Edviron payment gateway
+6. Extract payment URL and collect_request_id
+7. Update order with collect_request_id
+8. Return payment link to frontend
+
+**Security Features**:
+- JWT token validation
+- Field validation middleware
+- Signed payment requests
+- Secure API communication
+
+---
+
+### 4. Payment Status Check
+
+**Purpose**: Verify payment status and retrieve transaction details
+
+**Endpoint**: `GET /api/user/PaymentStatusCheck/{collect_request_id}?school_id={school_id}`
+
+**Headers**:
+```
+Content-Type: application/json
+Authorization: Bearer <API_KEY>
+```
+
+**Example URL**:
+```
+GET /api/user/PaymentStatusCheck/collect_xyz789abc123?school_id=school_abc123
+```
+
+**Query Parameters**:
+- `school_id`: School identifier
+- `collect_request_id`: Payment request identifier
+
+**Success Response** (200):
+```json
+{
+  "success": true,
+  "PaymentLink": {
+    "status": "SUCCESS",
+    "amount": 65000,
+    "transaction_amount": 65000,
+    "status_code": 200,
+    "details": {
+      "payment_mode": "upi",
+      "bank_ref": "bank_ref_123456",
+      "payment_methods": {
+        "upi": {
+          "channel": null,
+          "upi_id": "testsuccess@gocash"
+        }
+      }
+    },
+    "custom_order_id": "NA",
+    "capture_status": "PENDING",
+    "jwt": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdGF0dXMiOiJTVUNDRVNTIn0.example_jwt",
+    "sign": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdGF0dXMiOiJTVUNDRVNTIn0.example_sign"
+  }
+}
+```
+
+**Payment Status Values**:
+- `SUCCESS`: Payment completed successfully
+- `FAILED`: Payment failed
+- `PENDING`: Payment in progress
+
+---
+
+### 5. Order Status Update
+
+**Purpose**: Update local order status based on payment gateway response
+
+**Endpoint**: `GET /api/user/updateOrderStatusFromPaymentStatus/{collect_request_id}?school_id={school_id}`
+
+**Headers**:
+```
+Content-Type: application/json
+Authorization: Bearer <API_KEY>
+```
+
+**Example URL**:
+```
+GET /api/user/updateOrderStatusFromPaymentStatus/collect_xyz789abc123?school_id=school_abc123
+```
+
+**Success Response** (200):
+```json
+{
+  "message": "Order status updated successfully"
+}
+```
+
+---
+
+### 6. Webhook Handler
+
+**Purpose**: Receive payment status notifications from payment gateway
+
+**Endpoint**: `POST /api/webhook`
+
+**Headers**:
+```
+Content-Type: application/json
+```
+
+**Request Body Structure**:
+```json
+{
+  "status": "number",
+  "order_info": {
+    "collect_request_id": "string",
+    "order_id": "string",
+    "order_amount": "number",
+    "transaction_amount": "number",
+    "gateway": "string",
+    "bank_reference": "string",
+    "status": "string",
+    "payment_mode": "string",
+    "payment_details": "string",
+    "payment_message": "string",
+    "payment_time": "string",
+    "error_message": "string"
+  }
+}
+```
+
+**Example Request**:
+```json
+{
+  "status": 200,
+  "order_info": {
+    "collect_request_id": "collect_xyz789abc123",
+    "order_id": "order_abc123def456",
+    "order_amount": 65000,
+    "transaction_amount": 65000,
+    "gateway": "Edviron",
+    "bank_reference": "bank_ref_123456",
+    "status": "SUCCESS",
+    "payment_mode": "upi",
+    "payment_details": "user@paytm",
+    "payment_message": "payment success",
+    "payment_time": "2025-04-23T08:14:21.945Z",
+    "error_message": "NA"
+  }
+}
+```
+
+**Success Response** (200):
+```json
+{
+  "message": "Webhook processed successfully"
+}
+```
+
+**Purpose**: Automatically update order status when payment gateway sends notifications
+
+---
+
+### 7. School Orders Retrieval
+
+**Purpose**: Get all payment orders for a specific school
+
+**Endpoint**: `GET /api/user/school/{school_id}`
+
+**Headers**:
+```
+Content-Type: application/json
+```
+
+**Example URL**:
+```
+GET /api/user/school/school_abc123
+```
+
+**Success Response** (200):
+```json
+[
+  {
+    "_id": "order_id_example123",
+    "school_id": "school_abc123",
+    "trustee_id": "trustee_xyz789",
+    "gateway_name": "Edviron",
+    "createdAt": "2025-09-12T15:18:27.296Z",
+    "collect_request_id": "collect_xyz789abc123",
+    "order_id": "order_abc123def456"
+  },
+  {
+    "_id": "order_id_example456",
+    "school_id": "school_abc123",
+    "trustee_id": "trustee_xyz789",
+    "gateway_name": "Edviron",
+    "createdAt": "2025-09-13T10:30:15.123Z",
+    "collect_request_id": "collect_def456ghi789",
+    "order_id": "order_def456ghi789"
+  }
+]
+```
+---
+
+Quick Reference - cURL Templates
+
+Copy-Paste Ready Commands
+
+1. Register New User:
+bashcurl -X POST http://localhost:9003/api/user/register/ \
+  -H "Content-Type: application/json" \
+  -d '{"FirstName": "", "LastName": "", "Email": "", "Password": ""}'
+
+2. User Login:
+bashcurl -X POST http://localhost:9003/api/user/login/ \
+  -H "Content-Type: application/json" \
+  -d '{"Email": "", "Password": ""}'
+
+3. Create Payment:
+bashcurl -X POST http://localhost:9003/api/user/payment/ \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  -d '{"school_id": "", "amount": , "callback_url": "", "user_upi": "", "name": "", "email": "", "id": "", "trustee_id": ""}'
+
+4. Check Payment Status:
+bashcurl -X GET "http://localhost:9003/api/user/PaymentStatusCheck/<COLLECT_REQUEST_ID>?school_id=<SCHOOL_ID>" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <API_KEY>"
+
+5. Update Order Status:
+bashcurl -X GET "http://localhost:9003/api/user/updateOrderStatusFromPaymentStatus/<COLLECT_REQUEST_ID>?school_id=<SCHOOL_ID>" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <API_KEY>"
+
+6. Get School Orders:
+bashcurl -X GET "http://localhost:9003/api/user/school/<SCHOOL_ID>" \
+  -H "Content-Type: application/json"
+  
+7. Get All Orders:
+bashcurl -X GET "http://localhost:9003/api/user/" \
+  -H "Content-Type: application/json"
+---
+
+## Frontend Implementation
+
+### Application Architecture
+
+The frontend is built using React with Vite for fast development and optimized builds. The application follows a component-based architecture with clear separation of concerns.
+
+### Key Application Modules
+
+#### 1. User Authentication Module
+**Registration Component:**
+- Clean form interface for new user registration
+- Real-time validation for email format and password strength
+- Success feedback with automatic redirection to login
+- Error handling with user-friendly messages
+
+**Login Component:**
+- Secure credential input with proper form validation
+- JWT token management and secure storage
+- Automatic redirection based on user session status
+- Remember user preferences and session persistence
+
+#### 2. Payment Dashboard Module
+**Main Dashboard:**
+- Intuitive user interface with minimal design approach
+- Clear payment options with amount input validation
+- School selection dropdown with search functionality
+- Payment history section showing previous transactions
+
+**Payment Form:**
+- Step-by-step payment process with progress indicators
+- Required field validation before payment initiation
+- UPI ID input with format validation (optional field)
+- Callback URL configuration for successful payment redirection
+
+#### 3. Payment Processing Module
+**Payment Initiation:**
+- Secure API integration with proper authentication headers
+- Loading states during payment link generation
+- Automatic redirection to payment gateway upon success
+- Error handling for failed payment initiation
+
+**Payment Gateway Integration:**
+- Seamless redirection to Edviron payment portal
+- Handle callback responses from payment gateway
+- Process payment completion status
+- Display appropriate success/failure messages
+
+#### 4. Status Management Module
+**Payment Status Tracking:**
+- Real-time payment status monitoring
+- Automatic status refresh at regular intervals
+- Visual indicators for payment states (Pending/Success/Failed)
+- Transaction details display with proper formatting
+
+**Order History:**
+- Comprehensive view of all user transactions
+- Filter and search functionality for orders
+- Export options for payment receipts
+- Detailed transaction information display
+
+### Frontend Features & Capabilities
+
+#### User Experience Features
+1. **Responsive Design**: Fully responsive layout supporting desktop, tablet, and mobile devices
+2. **Progressive Web App**: Offline capability and app-like experience
+3. **Accessibility**: WCAG compliant with proper ARIA labels and keyboard navigation
+4. **Internationalization**: Multi-language support for different regions
+
+#### Technical Features
+1. **State Management**: Centralized application state using React Context or Redux
+2. **Form Validation**: Client-side validation with real-time feedback
+3. **Error Boundaries**: Graceful error handling to prevent application crashes
+4. **Code Splitting**: Lazy loading for optimal performance
+
+#### Security Features
+1. **Token Management**: Secure handling of JWT tokens with automatic refresh
+2. **Input Sanitization**: Protection against XSS attacks
+3. **HTTPS Enforcement**: All API communications over secure connections
+4. **Session Security**: Proper session timeout and logout mechanisms
+
+#### Performance Optimizations
+1. **Lazy Loading**: Components loaded on demand
+2. **Memoization**: Optimized re-rendering of components
+3. **Bundle Optimization**: Minimized JavaScript and CSS files
+4. **Caching Strategy**: Efficient API response caching
+
+### Integration Requirements
+
+#### API Integration Points
+- User registration and authentication endpoints
+- Payment creation and status check APIs
+- Order management and history retrieval
+- Webhook status update handling
+
+#### External Service Dependencies
+- Edviron payment gateway integration
+- Email notification services (optional)
+- SMS notification services (optional)
+- Analytics and monitoring tools
+
+### Data Flow Architecture
+
+#### Authentication Flow
+1. User enters credentials on login form
+2. Frontend validates input and sends API request
+3. Backend validates credentials and returns JWT tokens
+4. Frontend stores tokens securely and updates application state
+5. Subsequent API calls include authentication headers
+
+#### Payment Processing Flow
+1. User selects school and enters payment details
+2. Frontend validates all required fields
+3. API call made to create payment with authentication
+4. Backend generates payment link and returns to frontend
+5. User redirected to payment gateway for transaction
+6. Gateway processes payment and redirects back with status
+7. Frontend updates payment status and displays result
+
+### Error Handling Strategy
+
+#### User-Friendly Error Messages
+- Network connectivity issues with retry options
+- Validation errors with specific field highlighting
+- Payment gateway errors with alternative payment methods
+- Session timeout notifications with re-login prompts
+
+#### Fallback Mechanisms
+- Offline mode with cached data display
+- Alternative payment methods when primary fails
+- Manual status check options if auto-refresh fails
+- Customer support contact information for unresolved issues
+
+### Testing Considerations
+
+#### Frontend Testing Strategy
+- Unit tests for individual components
+- Integration tests for API interactions
+- End-to-end tests for complete user workflows
+- Cross-browser compatibility testing
+- Mobile responsiveness testing
+- Accessibility compliance testing
+
+This frontend implementation provides a robust, secure, and user-friendly interface for the school payment system while maintaining proper separation from backend logic and ensuring optimal user experience across all devices and platforms.
+
+---
+
+## Data Models
+
+### Order Schema
+```javascript
+{
+  _id: ObjectId,
+  school_id: String,
+  trustee_id: String, 
+  gateway_name: String (default: "Edviron"),
+  collect_request_id: String,
+  order_id: String,
+  student_info: {
+    name: String,
+    id: String,
+    email: String
+  },
+  amount: Number,
+  status: String,
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+### User Schema
+```javascript
+{
+  _id: ObjectId,
+  firstName: String,
+  lastName: String,
+  email: String (unique),
+  password: String (hashed),
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+---
+
+## Testing Guide
+
+### Test UPI IDs for Sandbox Environment
+
+For testing payment flows, use these UPI IDs:
+
+- `testsuccess@gocash` - Simulates successful transaction
+- `testfailure@gocash` - Simulates failed transaction  
+- `testtpvsuccess@gocash` - Third Party Vendor success
+- `testtpvfail@gocash` - Third Party Vendor failure
+- `success@upi` or `success@razorpay` - Success in some environments
+- `failure@upi` - Failure simulation
+
+### Testing Workflow
+
+1. **User Registration**: Create test user account
+2. **User Login**: Get access tokens
+3. **Payment Initiation**: Create payment with test data
+4. **Payment Gateway**: Use test UPI ID for payment
+5. **Status Verification**: Check payment status
+6. **Webhook Testing**: Verify webhook reception
+
+---
+
+## Security Considerations
+
+### Authentication
+- JWT tokens with expiration
+- Password hashing
+- API key validation
+
+### Payment Security
+- Signed payment requests
+- HTTPS communication
+- Webhook validation
+- Input sanitization
+
+### Data Protection
+- Sensitive data masking in logs
+- Secure token storage
+- PCI compliance considerations
+- Regular security audits
+
+### Best Practices
+- Regular token refresh
+- Secure secret key management
+- Error message sanitization
+- Rate limiting implementation
+
+---
+
+## Deployment Instructions
+
+### Development Setup
+```bash
+# Install dependencies
+npm install
+
+# Start both backend and frontend
+npm start
+
+# Or start individually
+npm run start:backend
+npm run start:frontend
+```
+
+### Environment Variables
+```
+PORT=9003
+JWT_SECRET=your_jwt_secret_key
+PG_SECRET_KEY=payment_gateway_secret_key
+API_KEY=payment_gateway_api_key
+DATABASE_URL=mongodb://localhost:27017/school_payments
+NODE_ENV=development
+```
+
+### Production Deployment
+1. Set production environment variables
+2. Configure HTTPS certificates
+3. Set up monitoring and logging
+4. Configure webhook endpoints
+5. Test payment flows thoroughly
+6. Set up backup and recovery procedures
+
+---
+
+## API Response Status Codes
+
+| Code | Status | Description |
+|------|--------|-------------|
+| 200 | Success | Request completed successfully |
+| 400 | Bad Request | Invalid request data |
+| 401 | Unauthorized | Invalid or missing authentication |
+| 404 | Not Found | Resource not found |
+| 500 | Internal Server Error | Server processing error |
+
+---
+
+## Error Handling
+
+### Common Error Responses
+
+**Validation Error (400)**:
+```json
+{
+  "success": false,
+  "message": "Invalid request data",
+  "errors": [
+    {
+      "field": "email",
+      "message": "Invalid email format"
+    }
+  ]
+}
+```
+
+**Authentication Error (401)**:
+```json
+{
+  "success": false,
+  "message": "Authentication token required"
+}
+```
+
+**Server Error (500)**:
+```json
+{
+  "success": false,
+  "message": "Internal server error occurred"
+}
+```
+
+---
+
+## Support & Maintenance
+
+### Monitoring Points
+- Payment success rates
+- API response times  
+- Error logs and patterns
+- User registration trends
+- Gateway integration status
+- Database performance metrics
+
+### Common Issues & Solutions
+
+1. **Token Expiration**: 
+   - Issue: Access token expires frequently
+   - Solution: Implement automatic refresh mechanism
+
+2. **Payment Gateway Timeouts**:
+   - Issue: Slow gateway response
+   - Solution: Implement retry logic with exponential backoff
+
+3. **Webhook Delays**:
+   - Issue: Status updates arrive late
+   - Solution: Implement fallback status checking
+
+4. **Invalid Signatures**:
+   - Issue: JWT signature verification fails
+   - Solution: Verify secret key configuration and token generation
+
+### Performance Optimization
+- Database indexing on frequently queried fields
+- Response caching for static data
+- Connection pooling for database operations
+- CDN implementation for frontend assets
+
+This documentation provides a comprehensive overview of the School Payment System with proper data sanitization and security considerations.
