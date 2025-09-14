@@ -20,7 +20,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(express.json());
 
-const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
 app.use(
   cors({
