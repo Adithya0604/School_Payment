@@ -8,7 +8,6 @@ const PaymentStatusRouter = express.Router();
 //Payment Status
 PaymentStatusRouter.get(
   "/PaymentStatusCheck/:collect_request_id",
-  UserAuth,
   PaymentStatusMiddleWare,
   PaymentStatusCheck
 );
@@ -16,7 +15,6 @@ PaymentStatusRouter.get(
 //Update Model With Payment Status
 PaymentStatusRouter.get(
   "/updateOrderStatusFromPaymentStatus/:collect_request_id",
-  UserAuth,
   PaymentStatusMiddleWare,
   PaymentStatusCheck
 );

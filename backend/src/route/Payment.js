@@ -10,7 +10,6 @@ const PaymentRouter = express.Router();
 //Payment
 PaymentRouter.post(
   "/payment",
-  UserAuth,
   CreatePaymentMiddleWare,
   CreatePaymentAndLink
 );

@@ -23,9 +23,9 @@ UserRouter.route("/register").post(userRegisterMiddleWare, userRegister);
 UserRouter.route("/login").post(userLoginMiddleWare, userLogin);
 
 // # User RefreshToken
-UserRouter.route("/refreshToken").post(UserAuth, refreshTokenHandler);
+UserRouter.route("/refreshToken").post(refreshTokenHandler);
 
 // # User LogOut
-UserRouter.route("/logout").post(UserAuth, userLogout);
+UserRouter.route("/logout").post(userLogout);
 
 export default UserRouter;

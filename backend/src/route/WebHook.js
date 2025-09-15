@@ -4,6 +4,6 @@ import { UserAuth } from "../middleWares/PaymentMiddleWare.js";
 const WebHookRouter = express.Router();
 
 // POST webhook endpoint
-WebHookRouter.post("/webhook", UserAuth, WebHookStatus);
+WebHookRouter.post("/webhook", WebHookStatus);
 
 export { WebHookRouter };

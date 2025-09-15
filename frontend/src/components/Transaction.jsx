@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { ChevronUp, ChevronDown, Filter, Search } from "lucide-react";
 
 const TransactionList = () => {
@@ -14,11 +15,17 @@ const TransactionList = () => {
   const fetchTransactions = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user/`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/user/`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log("URL", `${import.meta.env.VITE_BACKEND_URL}/api/user/`)
+      if (!response.ok)
+        throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
       const mappedData = data.map((item, index) => ({
         collect_id: item.collect_request_id || `temp-${index}`,
@@ -51,9 +58,12 @@ const TransactionList = () => {
     const matchesStatus = !statusFilter || tx.status === statusFilter;
     const matchesSearch =
       !searchTerm ||
-      (tx.collect_id && tx.collect_id.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (tx.order_id && tx.order_id.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (tx.gateway_name && tx.gateway_name.toLowerCase().includes(searchTerm.toLowerCase()));
+      (tx.collect_id &&
+        tx.collect_id.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (tx.order_id &&
+        tx.order_id.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (tx.gateway_name &&
+        tx.gateway_name.toLowerCase().includes(searchTerm.toLowerCase()));
     return matchesStatus && matchesSearch;
   });
 
@@ -71,12 +81,21 @@ const TransactionList = () => {
       bValue = parseFloat(bValue) || 0;
     }
 
-    return sortOrder === "asc" ? (aValue > bValue ? 1 : -1) : aValue < bValue ? 1 : -1;
+    return sortOrder === "asc"
+      ? aValue > bValue
+        ? 1
+        : -1
+      : aValue < bValue
+      ? 1
+      : -1;
   });
 
   const totalPages = Math.ceil(sortedTransactions.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentTransactions = sortedTransactions.slice(startIndex, startIndex + itemsPerPage);
+  const currentTransactions = sortedTransactions.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
 
   const handleSort = (field) => {
     if (sortField === field) {
@@ -87,7 +106,8 @@ const TransactionList = () => {
     }
   };
 
-  const formatAmount = (amount) => (amount ? `₹${amount.toLocaleString("en-IN")}` : "₹0");
+  const formatAmount = (amount) =>
+    amount ? `₹${amount.toLocaleString("en-IN")}` : "₹0";
 
   const getStatusBadge = (status) => {
     const statusColors = {
@@ -96,11 +116,7 @@ const TransactionList = () => {
       FAILED: "badge-failed",
     };
     const colorClass = statusColors[status] || "badge-default";
-    return (
-      <span className={`badge ${colorClass}`}>
-        {status}
-      </span>
-    );
+    return <span className={`badge ${colorClass}`}>{status}</span>;
   };
 
   const columns = [
@@ -151,7 +167,11 @@ const TransactionList = () => {
           </div>
           <div className="summary-card amount">
             <h3>Total Amount</h3>
-            <p>{formatAmount(transactions.reduce((sum, t) => sum + (t.order_amount || 0), 0))}</p>
+            <p>
+              {formatAmount(
+                transactions.reduce((sum, t) => sum + (t.order_amount || 0), 0)
+              )}
+            </p>
           </div>
         </section>
 
@@ -178,7 +198,8 @@ const TransactionList = () => {
             </select>
           </div>
           <div className="page-info">
-            Showing {currentTransactions.length} of {filteredTransactions.length} transactions
+            Showing {currentTransactions.length} of{" "}
+            {filteredTransactions.length} transactions
           </div>
         </section>
 
@@ -188,10 +209,16 @@ const TransactionList = () => {
               <tr>
                 {columns.map((col) => (
                   <th key={col.key} onClick={() => handleSort(col.key)}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                    <div
+                      style={{ display: "flex", alignItems: "center", gap: 4 }}
+                    >
                       <span>{col.label}</span>
                       {sortField === col.key ? (
-                        sortOrder === "asc" ? <ChevronUp className="icon-sort" /> : <ChevronDown className="icon-sort" />
+                        sortOrder === "asc" ? (
+                          <ChevronUp className="icon-sort" />
+                        ) : (
+                          <ChevronDown className="icon-sort" />
+                        )
                       ) : null}
                     </div>
                   </th>
@@ -207,8 +234,13 @@ const TransactionList = () => {
                 </tr>
               ) : (
                 currentTransactions.map((transaction, index) => (
-                  <tr key={transaction.collect_id || index} className="hover-row">
-                    <td className="font-mono">{transaction.order_id || "N/A"}</td>
+                  <tr
+                    key={transaction.collect_id || index}
+                    className="hover-row"
+                  >
+                    <td className="font-mono">
+                      {transaction.order_id || "N/A"}
+                    </td>
                     <td>
                       <span className="gateway-badge">
                         {transaction.gateway_name}
@@ -220,7 +252,9 @@ const TransactionList = () => {
                     <td className="amount-blue">
                       {formatAmount(transaction.transaction_amount)}
                     </td>
-                    <td className="uppercase">{transaction.payment_mode || "N/A"}</td>
+                    <td className="uppercase">
+                      {transaction.payment_mode || "N/A"}
+                    </td>
                     <td>{getStatusBadge(transaction.status)}</td>
                     <td>{transaction.collect_id}</td>
                   </tr>
@@ -242,7 +276,9 @@ const TransactionList = () => {
               Previous
             </button>
             <button
-              onClick={() => setCurrentPage(Math.min(totalPages || 1, currentPage + 1))}
+              onClick={() =>
+                setCurrentPage(Math.min(totalPages || 1, currentPage + 1))
+              }
               disabled={currentPage === totalPages || totalPages === 0}
             >
               Next
