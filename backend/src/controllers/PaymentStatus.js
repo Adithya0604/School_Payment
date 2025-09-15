@@ -11,6 +11,7 @@ dotenv.config();
 async function PaymentStatusCheck(request, response) {
   const { school_id } = request.query;
   const { collect_request_id } = request.params;
+  const BACKEND_URL = process.env.BACKEND_URL;
 
   try {
     if (request.path.includes("PaymentStatusCheck")) {
@@ -33,7 +34,7 @@ async function PaymentStatusCheck(request, response) {
     }
 
     if (request.path.includes("updateOrderStatusFromPaymentStatus")) {
-      const url = `http://localhost:9003/api/user/PaymentStatusCheck/${collect_request_id}?school_id=${school_id}`;
+      const url = `${BACKEND_URL}/api/user/PaymentStatusCheck/${collect_request_id}?school_id=${school_id}`;
       const apiResponse = await axios.get(url, { timeout: 4000 });
 
       if (!apiResponse.data.success) {
@@ -102,16 +103,12 @@ async function PaymentStatusCheck(request, response) {
 
       (async () => {
         try {
-          await axios.post(
-            "http://localhost:9003/api/webhook",
-            webhookpayload,
-            {
-              headers: {
-                "Content-Type": "application/json",
-              },
-              timeout: 6000,
-            }
-          );
+          await axios.post(`${BACKEND_URL}/api/webhook`, webhookpayload, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            timeout: 6000,
+          });
         } catch (error) {
           return response
             .status(ErrorCodes.Bad_Request)

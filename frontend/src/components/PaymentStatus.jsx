@@ -12,7 +12,7 @@ function PaymentStatus({ collect_request_id, school_id }) {
     async function checkStatus() {
       try {
         const response = await axios.get(
-          `http://localhost:9003/api/user/PaymentStatusCheck/${collect_request_id}?school_id=${school_id}`,
+          `${import.meta.env.VITE_BACKEND_URL}/api/user/PaymentStatusCheck/${collect_request_id}?school_id=${school_id}`,
           { withCredentials: true }
         );
 
@@ -23,7 +23,7 @@ function PaymentStatus({ collect_request_id, school_id }) {
           clearInterval(pollingInterval);
 
           await axios.get(
-            `http://localhost:9003/api/user/updateOrderStatusFromPaymentStatus/${collect_request_id}?school_id=${school_id}`,
+            `${import.meta.env.VITE_BACKEND_URL}/api/user/updateOrderStatusFromPaymentStatus/${collect_request_id}?school_id=${school_id}`,
             { withCredentials: true }
           );
 

@@ -4,7 +4,7 @@ import { getAccessToken, setAccessToken } from "../../utils/fetchWithAuth";
 export async function userRegister(userData) {
   try {
     const response = await axios.post(
-      "http://localhost:9003/api/user/register/",
+      `${import.meta.env.VITE_BACKEND_URL}/api/user/register/`,
       userData,
       {
         headers: {
@@ -21,7 +21,7 @@ export async function userRegister(userData) {
 export async function userLogin(userData) {
   try {
     const response = await axios.post(
-      "http://localhost:9003/api/user/login/",
+      `${import.meta.env.VITE_BACKEND_URL}/api/user/login/`,
       userData,
       {
         headers: {
@@ -45,7 +45,7 @@ export async function userPayment(userData) {
   try {
     const token = getAccessToken();
     const response = await axios.post(
-      "http://localhost:9003/api/user/payment/",
+      `${import.meta.env.VITE_BACKEND_URL}/api/user/payment/`,
       userData,
       {
         headers: {
@@ -63,7 +63,7 @@ export async function userPayment(userData) {
 export async function userLogout() {
   try {
     const response = await axios.post(
-      "http://localhost:8003/api/user/logout",
+      `${import.meta.env.VITE_BACKEND_URL}/api/user/logout`,
       {},
       {
         withCredentials: true,

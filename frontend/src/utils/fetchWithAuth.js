@@ -26,7 +26,7 @@ export async function fetchWithAuth(url, options = {}) {
 
     if (res.status === 401) {
       const refresh = await fetch(
-        "http://localhost:9003/api/user/refreshToken",
+        `${import.meta.env.VITE_BACKEND_URL}/api/user/refreshToken`,
         {
           method: "POST",
           credentials: "include",
