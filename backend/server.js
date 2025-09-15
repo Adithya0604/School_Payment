@@ -41,10 +41,10 @@ app.use("/api/", WebHookRouter);
 app.use(errorHandle);
 
 // http calls --> https calls (converter)
-app.use((req, res, next) => {
-  if (req.secure || req.headers["x-forwarded-proto"] === "https") return next();
-  res.redirect(`https://${req.headers.host}${req.url}`);
-});
+// app.use((req, res, next) => {
+//   if (req.secure || req.headers["x-forwarded-proto"] === "https") return next();
+//   res.redirect(`https://${req.headers.host}${req.url}`);
+// });
 
 // Start server
 app.listen(PORT, () => console.log(`Server is listening on port ${PORT}`));
