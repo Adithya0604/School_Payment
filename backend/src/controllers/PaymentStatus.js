@@ -25,7 +25,6 @@ async function PaymentStatusCheck(request, response) {
           "Content-Type": "application/json",
           Authorization: `Bearer ${process.env.API_KEY}`,
         },
-        timeout: 4000,
       });
 
       const data = Payment_Gateway_Response.data;
@@ -35,7 +34,7 @@ async function PaymentStatusCheck(request, response) {
 
     if (request.path.includes("updateOrderStatusFromPaymentStatus")) {
       const url = `${BACKEND_URL}/api/user/PaymentStatusCheck/${collect_request_id}?school_id=${school_id}`;
-      const apiResponse = await axios.get(url, { timeout: 4000 });
+      const apiResponse = await axios.get(url);
 
       if (!apiResponse.data.success) {
         return response.status(500).json({

@@ -8,7 +8,7 @@ import {
   refreshTokenHandler,
 } from "../controllers/User.js";
 
-import { UserAuth } from "../middleWares/PaymentMiddleWare.js";
+
 
 import {
   userRegisterMiddleWare,

@@ -6,7 +6,6 @@ async function CreatePaymentMiddleWare(request, response, next) {
   const { school_id, amount, callback_url, user_upi } = request.body;
 
   try {
-
     const schoolID = /^[a-fA-F0-9]{24}$/;
     if (!schoolID.test(school_id) || typeof school_id !== "string") {
       return response

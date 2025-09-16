@@ -43,7 +43,9 @@ async function CreatePaymentAndLink(req, res) {
     await order.save();
 
     const payload = { school_id, amount, callback_url };
+
     if (user_upi) payload.user_upi = user_upi;
+    
     const sign = JWT.sign(payload, process.env.PG_SECRET_KEY);
 
     const { data } = await axios.post(
@@ -76,6 +78,7 @@ async function CreatePaymentAndLink(req, res) {
       },
     });
   } catch (error) {
+    console.log("Error", error);
     return res.status(500).json({
       success: false,
       message: "Failed to create order/payment link",
