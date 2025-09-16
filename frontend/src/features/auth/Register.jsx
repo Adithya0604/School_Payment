@@ -14,6 +14,8 @@ function Register() {
     Password: "",
   });
 
+  console.log("FormData: 1", formData);
+
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
@@ -22,7 +24,9 @@ function Register() {
     setFormData({ ...formData, [name]: value });
   };
 
+
   const handleSubmit = async (event) => {
+
     event.preventDefault();
     setErrors({});
     setIsLoading(true);
@@ -44,8 +48,11 @@ function Register() {
       return;
     }
 
+
     try {
+
       const response = await userRegister(formData);
+
 
       if (response.status === 201) {
         setModel("Successfully Registered");

@@ -9,21 +9,37 @@ function PaymentStatus({ collect_request_id, school_id }) {
   useEffect(() => {
     let pollingInterval;
 
+    let throttle = (func, delay) => {
+      let lastcall = 0;
+
+      return (...args) => {
+        const now = Date.now();
+        if (now - lastcall >= delay) {
+          lastcall = now;
+          func(...args);
+        }
+      };
+    };
+
     async function checkStatus() {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/user/PaymentStatusCheck/${collect_request_id}?school_id=${school_id}`,
+          `${
+            import.meta.env.VITE_BACKEND_URL
+          }/api/user/PaymentStatusCheck/${collect_request_id}?school_id=${school_id}`,
           { withCredentials: true }
         );
 
         const currentStatus = response.data.PaymentLink?.status || "Pending";
         setStatus(currentStatus);
 
-        if (currentStatus === "SUCCESS" || currentStatus === "NOT INITIATED") {
+        if (currentStatus === "SUCCESS") {
           clearInterval(pollingInterval);
 
           await axios.get(
-            `${import.meta.env.VITE_BACKEND_URL}/api/user/updateOrderStatusFromPaymentStatus/${collect_request_id}?school_id=${school_id}`,
+            `${
+              import.meta.env.VITE_BACKEND_URL
+            }/api/user/updateOrderStatusFromPaymentStatus/${collect_request_id}?school_id=${school_id}`,
             { withCredentials: true }
           );
 
@@ -34,14 +50,14 @@ function PaymentStatus({ collect_request_id, school_id }) {
       } catch (error) {
         clearInterval(pollingInterval);
         setStatus("FAILED");
-        console.error("Error fetching payment status:", error.message);
       }
     }
 
+    const throttleStatus = throttle(checkStatus, 4000);
     if (collect_request_id && school_id) {
-      checkStatus();
+      throttleStatus();
 
-      pollingInterval = setInterval(checkStatus, 3000);
+      pollingInterval = setInterval(throttleStatus, 3000);
     }
 
     return () => {

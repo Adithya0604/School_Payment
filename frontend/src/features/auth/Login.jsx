@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { userLogin } from "./authapi";
-import { setAccessToken } from "../../utils/fetchWithAuth";
 import FormError from "../../components/FormError";
 import Model from "../../components/Model";
 
@@ -25,19 +24,21 @@ function Login() {
     event.preventDefault();
     setErrors({});
     setIsLoading(true);
+
     const newErrors = {};
     for (let field in formData) {
       if (!formData[field]) newErrors[field] = `${field} is required`;
     }
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       setIsLoading(false);
       return;
     }
+
     try {
       const response = await userLogin(formData);
       if (response.status === 200 && response.accessToken) {
-        setAccessToken(response.accessToken);
         setModel("Login Successful!");
 
         setTimeout(() => {

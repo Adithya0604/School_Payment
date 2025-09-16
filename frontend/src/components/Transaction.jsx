@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { ChevronUp, ChevronDown, Filter, Search } from "lucide-react";
 
 const TransactionList = () => {
@@ -15,15 +14,11 @@ const TransactionList = () => {
   const fetchTransactions = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(
+      const response = await fetch(
         `${import.meta.env.VITE_BACKEND_URL}/api/user/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+        { method: "GET", headers: { "Content-Type": "application/json" } }
       );
-      console.log("URL", `${import.meta.env.VITE_BACKEND_URL}/api/user/`)
+      console.log("URL", `${import.meta.env.VITE_BACKEND_URL}/api/user/`);
       if (!response.ok)
         throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
@@ -43,7 +38,6 @@ const TransactionList = () => {
       }));
       setTransactions(mappedData);
     } catch (error) {
-      console.error("Failed to fetch transactions:", error);
       alert(`Failed to fetch transactions: ${error.message}`);
     } finally {
       setLoading(false);
