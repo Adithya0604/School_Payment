@@ -2,6 +2,11 @@
 
 ## Project Overview
 
+
+FrontEnd Deployment: Netlify (Link : https://tranquil-frangipane-ec31f9.netlify.app)
+BackEnd Deployment: Render (Link : https://school-payment-wfi0.onrender.com)
+
+
 The School Payment System is a unified platform that enables students from multiple schools to make online payments through a single portal. Built with Express.js backend running on port 9003, the system integrates with the Edviron payment gateway to provide secure, reliable payment processing.
 
 ### Technology Stack
@@ -503,6 +508,7 @@ The frontend is built using React with Vite for fast development and optimized b
 - Handle callback responses from payment gateway
 - Process payment completion status
 - Display appropriate success/failure messages
+- Implemented Throttle for increasing performance
 
 #### 4. Status Management Module
 **Payment Status Tracking:**
@@ -542,6 +548,7 @@ The frontend is built using React with Vite for fast development and optimized b
 2. **Memoization**: Optimized re-rendering of components
 3. **Bundle Optimization**: Minimized JavaScript and CSS files
 4. **Caching Strategy**: Efficient API response caching
+5. **Throttle**: Reduce unnecessary calls and enhance performance.
 
 ### Integration Requirements
 
@@ -709,6 +716,8 @@ npm run start:frontend
 
 ### Environment Variables
 ```
+FRONTEND=FrontEnd_Production_url
+BACKEND=Backend_production_url
 PORT=9003
 JWT_SECRET=your_jwt_secret_key
 PG_SECRET_KEY=payment_gateway_secret_key
@@ -783,7 +792,6 @@ NODE_ENV=development
 - Error logs and patterns
 - User registration trends
 - Gateway integration status
-- Database performance metrics
 
 ### Common Issues & Solutions
 
@@ -791,22 +799,10 @@ NODE_ENV=development
    - Issue: Access token expires frequently
    - Solution: Implement automatic refresh mechanism
 
-2. **Payment Gateway Timeouts**:
-   - Issue: Slow gateway response
-   - Solution: Implement retry logic with exponential backoff
-
-3. **Webhook Delays**:
+2. **Webhook Delays**:
    - Issue: Status updates arrive late
    - Solution: Implement fallback status checking
 
-4. **Invalid Signatures**:
+3. **Invalid Signatures**:
    - Issue: JWT signature verification fails
    - Solution: Verify secret key configuration and token generation
-
-### Performance Optimization
-- Database indexing on frequently queried fields
-- Response caching for static data
-- Connection pooling for database operations
-- CDN implementation for frontend assets
-
-This documentation provides a comprehensive overview of the School Payment System with proper data sanitization and security considerations.
